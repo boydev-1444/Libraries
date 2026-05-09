@@ -142,7 +142,7 @@ def install_new_installer():
     try:
         sleep(1)
         to_console("Fetching installer...", (100, 140, 220), True)
-        installer_code = get(f"{RAW_BASE_URL}/installer.py", timeout=5).text
+        installer_code = get(f"{RAW_BASE_URL}/installer.py", timeout=5).raw.read().decode("UTF-8", errors="ignore")
         with open("installer.py", "w") as f:
             f.write(installer_code)
             f.flush()
