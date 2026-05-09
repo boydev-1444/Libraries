@@ -154,21 +154,18 @@ def install_new_installer():
         input()
         exit()
 
-with open("INSTALLER", "r") as f:
-    local_hash = f.read().strip()
-    if local_hash != INSTALLER_HASH:
-        to_console(f"Installer is outdated, a new version will be downloaded (Version {INSTALLER_HASH}). Press any key to continue.", (220, 190, 60), True)
-        input()
-        install_new_installer()
-        with open("INSTALLER", "w") as f:
-            f.write(INSTALLER_HASH)
-            f.flush()
-            f.close()
-        exit()
-    else:
-        to_console("Installer is up to date.", (100, 200, 140))
-        f.close()
-
+if isfile("INSTALLER"):
+    with open("INSTALLER", "r") as f:
+        local_hash = f.read().strip()
+        if local_hash != INSTALLER_HASH:
+            to_console(f"Installer is outdated, a new version will be downloaded (Version {INSTALLER_HASH}). Press any key to continue.", (220, 190, 60), True)
+            input()
+            install_new_installer()
+            with open("INSTALLER", "w") as f:
+                f.write(INSTALLER_HASH)
+                f.flush()
+                f.close()
+            exit()
 
 def install_new_version():
     to_console("Verifying assets...", (100, 140, 220), True)
