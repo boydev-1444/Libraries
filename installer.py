@@ -12,6 +12,10 @@ from requests import get
 
 init()
 
+REPO = "boydev-1444/Libraries"
+BASE_URL = f"https://api.github.com/repos/{REPO}"
+RAW_BASE_URL = f"https://raw.githubusercontent.com/{REPO}/main"
+
 def supports_ansi():
     if not stdout.isatty():
         return False
@@ -91,7 +95,7 @@ sleep(0.5)
 to_console("Fetching LunaUX's version...", (100, 140, 220), True)
 try:
     sleep(1)
-    API_URL = "https://api.github.com/repos/boydev-1444/Libraries/releases/latest"
+    API_URL = f"{BASE_URL}/releases/latest"
     to_console("Consulting to github's API...", (100, 140, 220), True)
     response_json = get(API_URL, timeout=5)
     if response_json.status_code != 200:
@@ -135,12 +139,26 @@ INSTALLER_HASH = find_meta("INSTALLER_HASH")
 
 def install_new_installer():
     to_console("Verifying assets...", (100, 140, 220), True)
-    
+    try:
+        sleep(1)
+        to_console("Fetching installer...", (100, 140, 220), True)
+        installer_code = get(f"{RAW_BASE_URL}/installer.py", timeout=5).text
+        with open("installer.py", "w") as f:
+            f.write(installer_code)
+            f.flush()
+            f.close()
+        to_console("Installer updated successfully. Restarting...", (100, 200, 140))
+        Popen([executable, "installer.py"], stdout=DEVNULL, stderr=DEVNULL)
+        exit()
+    except Exception as e:
+        to_console(f"[ERROR]: Failed to fetch the new installer. ({e})\nPress any key to exit", (220, 100, 120))
+        input()
+        exit()
 
 with open("INSTALLER", "r") as f:
     local_hash = f.read().strip()
     if local_hash != INSTALLER_HASH:
-        to_console("Installer is outdated, a new version will be downloaded. Press any key to continue.", (220, 190, 60))
+        to_console(f"Installer is outdated, a new version will be downloaded (Version {INSTALLER_HASH}). Press any key to continue.", (220, 190, 60), True)
         input()
         install_new_installer()
         with open("INSTALLER", "w") as f:
@@ -149,8 +167,7 @@ with open("INSTALLER", "r") as f:
             f.close()
     else:
         to_console("Installer is up to date.", (100, 200, 140))
-    f.flush()
-    f.close()
+        f.close()
 
 
 def install_new_version():
