@@ -166,6 +166,11 @@ if isfile("INSTALLER"):
                 f.flush()
                 f.close()
             exit()
+else:
+    with open("INSTALLER", "w") as f:
+        f.write(INSTALLER_HASH)
+        f.flush()
+        f.close()
 
 def install_new_version():
     to_console("Verifying assets...", (100, 140, 220), True)
