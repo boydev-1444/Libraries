@@ -142,8 +142,8 @@ def install_new_installer():
     try:
         sleep(1)
         to_console("Fetching installer...", (100, 140, 220), True)
-        installer_code = get(f"{RAW_BASE_URL}/installer.py", timeout=5).raw.read().decode("UTF-8", errors="ignore")
-        with open("installer.py", "w") as f:
+        installer_code = get(f"{RAW_BASE_URL}/installer.py", timeout=5).text
+        with open("installer.py", "w", encoding="utf-8", errors="ignore") as f:
             f.write(installer_code)
             f.flush()
             f.close()
@@ -199,7 +199,7 @@ def install_new_version():
     download_request = get(url, stream=True)
     download_size = int(download_request.headers.get("content-length", 0))
     downloaded = 0
-    output_name = "luna" + (".pyd" if platform.lower() == "windows" else ".so")
+    output_name = "luna" + (".pyd" if platform_system().lower() == "windows" else ".so")
     with open(output_name, "wb") as f:
         for chunk in download_request.iter_content(chunk_size=8192):
             if not chunk:
